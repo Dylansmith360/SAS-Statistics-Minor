@@ -1,0 +1,41 @@
+/*Import data into SAS from Excel*/
+filename EF16 '/home/jjw17e0/Data STA 3024/EconFreeClean.csv';
+proc import datafile=EF16
+out=EconFree16
+dbms=csv
+replace;
+run;
+
+filename IP '/home/jjw17e0/Data STA 3024/InternetPen1.csv';
+proc import datafile=IP 
+out=InternetPen
+dbms=csv
+replace;
+run;
+
+/*Sorting the data to be able to merge it*/
+proc sort data=EconFree16;
+by country;
+run;
+
+proc sort data=InternetPen;
+by country;
+run;
+
+/*Merging the datasets into a new dataset*/
+data EconFreeIP1;
+merge EconFree16 InternetPen;
+by country;
+run;
+
+/*Used If Missing() then delete to remove rows with missing values*/
+data EconFreeIP2;
+set econfreeip1;
+If Missing(CountryID) then delete;
+If Missing(Penetration) then delete;
+run;
+proc print data=econfreeip2 (obs=50);
+run;
+
+
+
